@@ -43,10 +43,16 @@ public class UserTradeService {
         var trade = userTradeRepository.findById(id);
         var instrumentDaCompra = instrumentRepository.buscarAcoesfiltrado(id, filter, nomeSimbol);
         var tradeRendimento = new UserTradeDto();
+
         var rendimento = calcularRendimento(instrumentDaCompra.getPrice(), Double.valueOf(trade.get().getQuantidade()),
                 Double.parseDouble(String.valueOf(trade.get().getValorTotal())));
+
         var rendimentoFormat = BigDecimal.valueOf(rendimento).setScale(2, RoundingMode.HALF_UP);
+
+        //Rendimento pode ter tido lucro ou nao
         tradeRendimento.setValorRendimento(FormatMoedaBrasileira.formatarMoedaBrasileira(rendimentoFormat));
+        //Rendimento pode ter tido lucro ou nao
+
         tradeRendimento.setId(trade.get().getId());
         tradeRendimento.setTipoOperacao(trade.get().getTipoOperacao());
         tradeRendimento.setMercado(trade.get().getMercado());
@@ -57,10 +63,6 @@ public class UserTradeService {
         tradeRendimento.setEspecificacao(trade.get().getEspecificacao());
         tradeRendimento.setValorTotal(FormatMoedaBrasileira.formatarMoedaBrasileira(trade.get().getValorTotal()));
         tradeRendimento.setValorRendimentoPorcento(NumeroPorcentual.formatarPercentual(rendimentoFormat));
-
-        //VALOR RENDIMENTOS TOTAIS
-
-
         return tradeRendimento;
     }
 
@@ -93,13 +95,6 @@ public class UserTradeService {
 
         return tradeRendimento;
     }
-
-    /*
-      public List<UserTradeDtoRendimentoAcumulado> buscarRendimentosAcumuladosTotais(LocalDate dataInicial, LocalDate datafim){
-        var rendimentoTotalAcomulado = userTradeRepository.rendimentoTotalAcomulado(dataInicial, datafim);
-        return rendimentoTotalAcomulado;
-    }
-     */
 
     private Double calcularRendimento (Double precoUnitarioAcao, Double precoQuantidade, double totalAcao ){
         var total = precoUnitarioAcao * precoQuantidade;
